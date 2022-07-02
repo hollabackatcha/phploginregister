@@ -32,14 +32,14 @@
           <div class="valid-feedback">Looks good!</div>
         </div>
         <div class="input_register-container has-validation">
-          <input id="input_register-pwd" type="password" class="form-control" placeholder="Password" pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$" required />
+          <input id="input_register-pwd" type="password" class="form-control" name="register_password" placeholder="Password" pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$" required />
           <div class="invalid-feedback">
             Your password must be minimum 8 characters and have at least one small letter, capital letter, special & numeric characters.
           </div>
           <div class="valid-feedback">Looks good!</div>
         </div>
         <div class="input_register-container has-validation">
-          <input type="text" id='input_register-cnfm-pwd' class="form-control" name="register_password-cnfm" placeholder="Confirm Password" required />
+          <input type="password" id='input_register-cnfm-pwd' class="form-control" name="register_password-cnfm" placeholder="Confirm Password" required />
           <div class="invalid-feedback">Passwords do not match.</div>
           <div class="valid-feedback">Looks good!</div>
         </div>
@@ -52,8 +52,7 @@
         <h1>Sign in</h1>
         <input id="input_login-uname" type="text" name="login_username" placeholder="Username" required />
         <input id="input_login-pwd" type="password" name="login_password" placeholder="Password" required />
-        <a href="./forgotpassword.php">Forgot your password?</a>
-        <button id="login_btn">Sign In</button>
+        <button id="login_btn" type="SUBMIT">Sign In</button>
       </form>
     </div>
     <div class="overlay-container">
@@ -80,7 +79,16 @@
     login($connection);
   }
   if (isset($_POST['register_username']) && isset($_POST['register_email']) && isset($_POST['register_password'])) {
-    createAccount(($connection));
+    if (isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
+      $secret = '6Lf9HYUgAAAAABWEbTD_sJogxi0UBomUbGmeiGEk';
+      $verify = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $_POST['g-recaptcha-response']);
+      $response = json_decode($verify);
+      if ($response->success) {
+        createAccount($connection);
+      } else {
+        echo "<script>showError('Captcha verification failed')</script>";
+      }
+    }
   }
 
 

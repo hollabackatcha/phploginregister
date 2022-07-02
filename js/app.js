@@ -55,3 +55,12 @@ document.querySelector('input#input_register-cnfm-pwd').addEventListener('input'
     event.target.setCustomValidity("Passwords don't match.");
   }
 })
+
+document.getElementById("frm-register").addEventListener("submit", function (evt) {
+  var response = grecaptcha.getResponse();
+  if (response.length == 0) {
+    showError('Captcha not verified!');
+    evt.preventDefault();
+    return false;
+  }
+});

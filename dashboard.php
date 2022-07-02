@@ -44,13 +44,14 @@ class TableRows extends RecursiveIteratorIterator
         <H1 class="my-3">Dashboard</H1>
         <button class="btn btn-danger my-5 mr-3"><a href="logout.php" class="text-light"> Log Out</a>
         </button>
+        <button class="btn btn-danger my-5 mr-3"><a href="passwordreset.php" class="text-light"> Reset Password</a>
+        </button>
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">S.N</th>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Mobile Num</th>
                     <th scope="col">Password</th>
                     <th scope="col">Expiry Date</th>
                 </tr>

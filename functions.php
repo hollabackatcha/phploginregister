@@ -16,12 +16,13 @@ function login(PDO $connection)
       echo "<script type='text/javascript'>showError('Incorrect Username/Password')</script>";
     } else {
       if (password_verify($password, $result['password']) == 1) {
+        $_SESSION['username'] = $username;
+        $_SESSION['password'] = $password;
         if ($result['expiry_date'] >= $today) {
+          $_SESSION['login'] = "True";
           header('location: dashboard.php');
         } else {
-
-          $_SESSION['username'] = $username;
-          header('location: forgotpassword.php');
+          header('location: passwordreset.php');
         }
       } else {
         echo "<script type='text/javascript'>showError('Incorrect Username/Password')</script>";
@@ -52,23 +53,5 @@ function createAccount(PDO $connection)
   } catch (PDOException $e) {
     $message = "Could not create account! Seems like your email address or username is already registered.";
     echo "<script type='text/javascript'>showError('$message')</script>";
-  }
-}
-
-function updatePassword(PDO $connection)
-{
-  if (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-    $password = $_POST['password'];
-    $datetime = date_add(new DateTime('now'), date_interval_create_from_date_string("60 days"))->format('Y-m-d H:i:s');
-    try {
-      $sql = $connection->prepare("UPDATE registertable SET password = '?', expiry_date = '?' WHERE username = '?';");
-      $sql->bindParam(1, $password, PDO::PARAM_STR);
-      $sql->bindParam(2, $datetime, PDO::PARAM_STR);
-      $sql->bindParam(3, $username, PDO::PARAM_STR);
-      $sql->execute();
-    } catch (PDOException $e) {
-      echo "<div class='error'>Could not update the password</div>";
-    }
   }
 }

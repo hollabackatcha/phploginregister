@@ -1,7 +1,6 @@
 <?php
 session_start();
 require 'connection.php';
-require 'functions.php';
 if (!isset($_SESSION['username'])) {
     header('location: index.php');
 }
@@ -46,7 +45,7 @@ $username = $_SESSION['username'];
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="input-container has-validation">
-                <input type="text" id="input_cnfm-pwd" class="form-control" name="password-cnfm" placeholder="Confirm Password" required />
+                <input type="password" id="input_cnfm-pwd" class="form-control" name="password-cnfm" placeholder="Confirm Password" required />
                 <div class="invalid-feedback">Passwords do not match.</div>
                 <div class="valid-feedback">Looks good!</div>
             </div>
@@ -90,11 +89,31 @@ $username = $_SESSION['username'];
                 }
             });
     </script>
+    <?php
+    if (isset($_POST['password'])) {
+        $username = $_SESSION['username'];
+        $password = $_POST['password'];
+        if ($password === $_SESSION['password']) {
+            echo "<div class='error'>New password can't be old password.</div>";
+        } else {
+            $pwd = password_hash($password, PASSWORD_DEFAULT);
+            $datetime = date_add(new DateTime('now'), date_interval_create_from_date_string("60 days"))->format('Y-m-d H:i:s');
+
+            try {
+                $sql = $connection->prepare("UPDATE registertable SET password = ?, expiry_date = ? WHERE username = ? ;");
+                $sql->bindParam(1, $pwd, PDO::PARAM_STR);
+                $sql->bindParam(2, $datetime, PDO::PARAM_STR);
+                $sql->bindParam(3, $username, PDO::PARAM_STR);
+                $sql->execute();
+                echo "DONE";
+                session_destroy();
+                header('location: index.php');
+            } catch (PDOException $e) {
+                echo $e->getMessage();
+            }
+        }
+    }
+    ?>
 </body>
 
 </html>
-
-<?php
-if (isset($_POST['password'])) {
-    updatePassword($conection);
-}
